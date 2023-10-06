@@ -4,10 +4,16 @@ fzf = FzfPrompt()
 
 
 def main():
-    print('Hello World!')
+    exchange_list = ccxt.exchanges
+    selected_exchange = []
+    while not selected_exchange:
+        selected_exchange = fzf.prompt(exchange_list)
+        print(f"Selected exchange: {selected_exchange}")
     # Initialize the Binance exchange object
-    exchange = ccxt.binance()
+    exchange_name = selected_exchange[0]
+    exchange = getattr(ccxt, exchange_name)()
 
+    print('Asset selection')
     try:
         # Fetch the list of assets traded on Binance
         markets = exchange.load_markets()
@@ -39,7 +45,7 @@ def main():
                 unique_asset_symbols.add(quote)
 
         asset_list = sorted(list(unique_asset_symbols))
-        print(f"Assets traded on Binance:{len(asset_list)}")
+        print(f"Assets traded on {selected_exchange[0]}:{len(asset_list)}")
 
         selected_asset = []
         while not selected_asset:
